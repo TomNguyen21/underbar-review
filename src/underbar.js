@@ -104,33 +104,6 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
 
-    // let results = [];
-    // let uniqObj = {};
-
-    // if (!isSorted) {
-    //   _.each(array, function(ele){
-    //     if (uniqObj[ele] === undefined) {
-    //       uniqObj[ele] = true;
-    //       results.push(ele);
-    //     }
-    //   })
-    // } else {
-    //   _.each(array, function(ele) {
-    //     if (uniqObj[ele] === undefined && iterator !== undefined) {
-    //       uniqObj[ele] = true;
-    //       if (iterator(ele)) {
-    //         results.push(ele);
-    //       }
-    //     } else {
-    //       uniqObj[ele] = true;
-    //       results.push(ele); /// [1, 2, 2, 3, 4, 4];  [1, 2, 1, 3, 1, 4];
-    //     }
-    //   })
-    // }
-
-    // return results;
-
-
     let results = [];
 
     if (isSorted){
@@ -279,12 +252,6 @@
     }
 
     return false;
-    // _.each(collection, function (ele) {
-    //   if (iterator(ele)) {
-    //     return true;
-    //   }
-    // })
-    // return false;
   };
 
 
@@ -307,11 +274,34 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+
+    for (let i = 1; i < arguments.length; i ++) {
+      let currentArgObject = arguments[i];
+      let keys = Object.keys(currentArgObject);
+
+      for (let j = 0; j < keys.length; j ++) {
+        obj[keys[j]] = currentArgObject[keys[j]];
+      }
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+
+    for (let i = 1; i < arguments.length; i ++) {
+      let currentArgObject = arguments[i];
+      let keys = Object.keys(currentArgObject);
+
+      for (let j = 0; j < keys.length; j ++) {
+        if (obj[keys[j]] === undefined) {
+          obj[keys[j]] = currentArgObject[keys[j]];
+        }
+
+      }
+    }
+    return obj;
   };
 
 
@@ -355,6 +345,15 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var result = {};
+
+    return function() {
+      if (!result[arguments]) {
+        result[arguments] = func.apply(this, arguments);
+      }
+
+      return result;
+    }
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -364,6 +363,17 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = [];
+
+    _.each(arguments, function(ele, index) {
+      if (index >= 2) {
+        args.push(ele);
+      }
+    })
+    setTimeout(function () {
+      func.apply(this, args)
+    }, wait)
+
   };
 
 
@@ -378,6 +388,16 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    let copiedArray = array.slice();
+    let shuffled = [];
+
+    for (let i = 0; i < copiedArray.length; i ++) {
+      let randomIndex = Math.floor(Math.random() * (i + 1));
+      shuffled.push(copiedArray[randomIndex]);
+      copiedArray[randomIndex] = copiedArray[array.length - 1]
+    }
+
+    return shuffled;
   };
 
 
